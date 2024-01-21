@@ -1,8 +1,4 @@
-{
-    "functions": {
-      "api/flask-api.js": {
-        "runtime": "vercel-node@2.4.0"
-      }
-    }
+
+  {
+    "rewrites": [{ "source": "/(.*)", "destination": "/api/flask-api" }]
   }
-  

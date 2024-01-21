@@ -1,0 +1,8 @@
+{
+    "functions": {
+      "api/flask-api.js": {
+        "runtime": "vercel-node@2.4.0"
+      }
+    }
+  }
+  

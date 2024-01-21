@@ -12,8 +12,8 @@ It provides a basic web interface where users can input queries, and the applica
 - Provides a simple web interface for user interaction.
 
 ## Prerequisites
-- Python 3.x
-- Flask
+- Python 3.8.10
+- Flask3.0.1
 - Pandas
 - Clarifai Python SDK
 

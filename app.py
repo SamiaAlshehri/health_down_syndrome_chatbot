@@ -41,5 +41,4 @@ def get_response_route():
     return jsonify({'response': bot_response})
 
 if __name__ == '__main__':
-    app.run(debug=True, port=0, threaded=False)
-
+    app.run(debug=True)

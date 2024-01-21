@@ -10,12 +10,13 @@
     <title>Down Syndrome Support</title>
     <style>
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Arial', sans-serif; /* Change the font-family to Arial */
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
+            font-size:14px;
             background: url('https://img.freepik.com/free-photo/portrait-charming-girl-with-down-syndrome-playing-with-easter-colored-eggs_1157-52088.jpg?w=1380&t=st=1705775139~exp=1705775739~hmac=cdd034f55a107c40fa77ef29b4d27e642a9ca8be902cb2a039eba018633c7bed') center/cover;
             background-attachment: fixed;
             color: #333;
@@ -91,6 +92,7 @@
             border: none;
             cursor: pointer;
             font-size: 16px;
+            color:#ffff;
             border-top-right-radius: 16px;
             border-bottom-right-radius: 16px;
         }
@@ -160,6 +162,7 @@
                 border: none;
                 cursor: pointer;
                 font-size: 16px;
+                color:#ffff;
                 border-top-right-radius: 16px;
                 border-bottom-right-radius: 16px;"  >Clear</h4> </div>
         </div>
@@ -179,35 +182,42 @@
         }
 
         function sendMessage() {
-            var user_input = document.getElementById('user-input').value;
-            document.getElementById('user-input').value = '';
+    var user_input = document.getElementById('user-input').value.trim(); // Trim whitespace
+    if (!user_input) {
+        // If the user input is empty or contains only whitespace, do nothing
+        return;
+    }
 
-            // User message
-            appendMessage('You', user_input, 'user');
+    document.getElementById('user-input').value = '';
 
-            // Fetch bot response from Flask server
-            fetch('/get_response', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'user_input=' + user_input,
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Bot message
-                appendMessage('Chatbot', data.response, 'bot');
+    // User message
+    appendMessage('You', user_input, 'user');
 
-                // Save the messages to local storage
-                chatHistory.push({ sender: 'You', text: user_input, type: 'user' });
-                chatHistory.push({ sender: 'Chatbot', text: data.response, type: 'bot' });
-                localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+    // Fetch bot response from Flask server
+    fetch('/get_response', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'user_input=' + user_input,
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Bot message
+        appendMessage('Chatbot', data.response, 'bot');
 
-                // Scroll to the bottom of the chat after the bot responds
-                chatDiv.scrollTop = chatDiv.scrollHeight;
-            })
-            .catch(error => console.error('Error:', error));
-        }
+        // Save the messages to local storage
+        chatHistory.push({ sender: 'You', text: user_input, type: 'user' });
+        chatHistory.push({ sender: 'Chatbot', text: data.response, type: 'bot' });
+        localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+
+        // Scroll to the bottom of the chat after the bot responds
+        var chatDiv = document.getElementById('chat');
+        chatDiv.scrollTop = chatDiv.scrollHeight;
+    })
+    .catch(error => console.error('Error:', error));
+}
+
 
         function appendMessage(sender, text, type) {
             var chatDiv = document.getElementById('chat');

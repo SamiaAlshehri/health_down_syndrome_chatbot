@@ -17,7 +17,6 @@ clarifai_model = Clarifai(model_url=model_url_or_id)
 
 def get_response(user_input):
     clarifai_response = clarifai_model.predict(user_input)
-    print("clarifai_response",clarifai_response)
     return clarifai_response
 
 def get_fallback_response(user_input):

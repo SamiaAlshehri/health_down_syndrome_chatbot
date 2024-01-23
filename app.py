@@ -4,8 +4,24 @@ import pandas as pd
 from langchain_community.llms import Clarifai
 import os
 
+# app.py
+from flask import Flask, render_template, request, jsonify
+import pandas as pd
+from langchain_community.llms import Clarifai
+import os
+import streamlit as st
+
+from dotenv import load_dotenv
+load_dotenv()
+
 # Set Clarifai PAT as environment variable
-os.environ["CLARIFAI_PAT"] = '9d07ba8ac414496b8c07bb45216abbf5'
+secret_key = os.getenv("SECRET_KEY")
+
+if secret_key is not None:
+    os.environ["CLARIFAI_PAT"] = secret_key
+    st.write("CLARIFAI_PAT successfully set.")
+else:
+    st.write("SECRET_KEY is not set. Unable to set CLARIFAI_PAT.")
 
 # Load CSV dataset
 dataset = pd.read_csv('dataset/dataset.csv', encoding='latin1')

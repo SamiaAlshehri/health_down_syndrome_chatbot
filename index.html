@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="style.css">
+    <title>Down Syndrome Support</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif; /* Change the font-family to Arial */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-size:14px;
+            background: url('https://img.freepik.com/free-photo/portrait-charming-girl-with-down-syndrome-playing-with-easter-colored-eggs_1157-52088.jpg?w=1380&t=st=1705775139~exp=1705775739~hmac=cdd034f55a107c40fa77ef29b4d27e642a9ca8be902cb2a039eba018633c7bed') center/cover;
+            background-attachment: fixed;
+            color: #333;
+        }
+
+        header {
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px; /* Added margin to create space between header and chat */
+        }
+
+        .chat-container {
+            display: flex;
+            align-items: center;
+            width: 70%;
+            margin-top: 20px;
+            margin-bottom: 50px;
+        }
+
+        .chat {
+            flex: 1;
+            background-color: #fff; /* White */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-right: 20px; /* Added space to the right */
+        }
+
+        .chat img {
+            width: 100%;
+            height: auto;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+        }
+
+        .chat .chat-content {
+            padding: 15px;
+            overflow-y: auto;
+            max-height: 500px;
+            background-color: #f6f6f6; /* Light Gray */
+            border-radius: 16px;
+        }
+
+        .input-field {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .input-field input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            border-top-left-radius: 16px;
+            border-bottom-left-radius: 16px;
+            margin-right: 10px; /* Added margin between input and button */
+            transition: background-color 0.3s;
+        }
+
+        .input-field input[type="text"]:focus {
+            background-color: #f0f0f0; /* Lighter Gray */
+        }
+
+        .input-field button {
+            width: 80px;
+            padding: 10px;
+            background-color: #e15d5d; /* Light Yellow */
+            color: #333; /* Dark Gray */
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color:#ffff;
+            border-top-right-radius: 16px;
+            border-bottom-right-radius: 16px;
+        }
+
+        .message-container {
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .user-message,
+        .bot-message {
+            padding: 10px;
+            border-radius: 16px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            background-color: #e15d5d; /* Blue */
+            color: #fff; /* White */
+            align-self: flex-end;
+            text-align: right;
+        }
+
+        .bot-message {
+            background-color: #e4e0d6; /* Light Yellow */
+            color: #333; /* Dark Gray */
+            text-align: left;
+        }
+        
+        h1 {
+            font-family: 'Pacifico', cursive;
+            color: #ff6347;
+            text-align: center;
+            padding: 20px;
+            border: 3px solid #ff6347;
+            border-radius: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1> Chat With US</h1>   
+    </header>
+
+    <div class="chat-container">
+        <div class="chat">
+            
+            <div class="chat-content" id="chat" onscroll="handleScroll()"></div>
+        
+            <div class="input-field">
+                <input type="text" id="user-input" placeholder="Type your message...">
+                <button onclick="sendMessage()">Send</button>
+       
+            </div>
+            <div>       
+                <h4 onclick="clearChatHistory() "style="  width: 80px;
+                padding: 10px;
+                background-color: #e15d5d; /* Light Yellow */
+                color: #333; /* Dark Gray */
+                border: none;
+                cursor: pointer;
+                font-size: 16px;
+                color:#ffff;
+                border-top-right-radius: 16px;
+                border-bottom-right-radius: 16px;"  >Clear</h4> </div>
+        </div>
+           
+    </div>
+    <script>
+        // Load chat history from local storage
+        var chatHistory = JSON.parse(localStorage.getItem('chatHistory')) || [];
+
+        function loadChatHistory() {
+            var chatDiv = document.getElementById('chat');
+            chatHistory.forEach(message => {
+                appendMessage(message.sender, message.text, message.type);
+            });
+            // Scroll to the bottom of the chat
+            chatDiv.scrollTop = chatDiv.scrollHeight;
+        }
+
+        function sendMessage() {
+    var user_input = document.getElementById('user-input').value.trim(); // Trim whitespace
+    if (!user_input) {
+        // If the user input is empty or contains only whitespace, do nothing
+        return;
+    }
+
+    document.getElementById('user-input').value = '';
+
+    // User message
+    appendMessage('You', user_input, 'user');
+
+    // Fetch bot response from Flask server
+    fetch('/get_response', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'user_input=' + user_input,
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Bot message
+        appendMessage('Chatbot', data.response, 'bot');
+
+        // Save the messages to local storage
+        chatHistory.push({ sender: 'You', text: user_input, type: 'user' });
+        chatHistory.push({ sender: 'Chatbot', text: data.response, type: 'bot' });
+        localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+
+        // Scroll to the bottom of the chat after the bot responds
+        var chatDiv = document.getElementById('chat');
+        chatDiv.scrollTop = chatDiv.scrollHeight;
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+
+        function appendMessage(sender, text, type) {
+            var chatDiv = document.getElementById('chat');
+            var messageContainer = document.createElement('div');
+            messageContainer.className = 'message-container';
+
+            var message = document.createElement('div');
+            message.className = type + '-message';
+            message.innerHTML = `<strong>${sender}:</strong> ${text}`;
+            messageContainer.appendChild(message);
+
+            chatDiv.appendChild(messageContainer);
+        }
+
+        // Function to clear chat history
+        function clearChatHistory() {
+            // Clear the chat history from local storage
+            localStorage.removeItem('chatHistory');
+
+            // Clear the chat content on the page
+            var chatDiv = document.getElementById('chat');
+            chatDiv.innerHTML = '';
+        }
+
+        // Load chat history when the page loads
+        window.onload = loadChatHistory;
+
+        // Handle scroll event
+        function handleScroll() {
+            var chatDiv = document.getElementById('chat');
+            if (chatDiv.scrollTop === 0) {
+                // Load more messages when scrolled to the top
+                loadMoreMessages();
+            }
+        }
+
+        // Load more messages
+        function loadMoreMessages() {
+            // You can implement the logic to load more messages here
+            console.log('Loading more messages...');
+        }
+    </script>
+</body>
+
+</html>

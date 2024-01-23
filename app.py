@@ -3,9 +3,20 @@ from flask import Flask, render_template, request, jsonify
 import pandas as pd
 from langchain_community.llms import Clarifai
 import os
+import streamlit as st
+
+from dotenv import load_dotenv
+load_dotenv()
 
 # Set Clarifai PAT as environment variable
-os.environ["CLARIFAI_PAT"] = '9d07ba8ac414496b8c07bb45216abbf5'
+secret_key = os.getenv("SECRET_KEY")
+
+if secret_key is not None:
+    os.environ["CLARIFAI_PAT"] = secret_key
+    st.write("CLARIFAI_PAT successfully set.")
+else:
+    st.write("SECRET_KEY is not set. Unable to set CLARIFAI_PAT.")
+
 app = Flask(__name__)
 
 # Load CSV dataset
@@ -40,5 +51,24 @@ def get_response_route():
 
     return jsonify({'response': bot_response})
 
-if __name__ == '__main__':
-    app.run(debug=True)
+def main():
+    st.set_page_config(page_title="Streamlit and Flask Chat App", page_icon=":robot_face:")
+    st.title("Chat With Us")
+
+    # Streamlit components
+    user_input = st.text_input("Type your message...")
+
+    if st.button("Send"):
+        if user_input.strip():
+            # Fetch bot response from Flask server
+            bot_response = fetch_bot_response(user_input)
+            st.write(f"**You:** {user_input}")
+            st.write(f"**Chatbot:** {bot_response}")
+
+def fetch_bot_response(user_input):
+    response = requests.post('http://127.0.0.1:5000/get_response', data={'user_input': user_input})
+    return response.json()['response']
+
+if __name__ == "__main__":
+    app.run(debug=True, use_reloader=False)
+    main()

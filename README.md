@@ -1,6 +1,10 @@
 
 # Chatbot App with Clarifai Vision and GPT-4 Integration
 
+
+https://github.com/SamiaAlshehri/health_down_syndrome_chatbot/assets/52881648/e5b397ca-9454-4d79-9efe-0321cd456657
+
+
 ## Overview
 This Flask application serves as a simple chatbot utilizing the Clarifai Vision API and GPT-4 model for generating responses. 
 

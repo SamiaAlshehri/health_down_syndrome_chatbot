@@ -8,7 +8,7 @@ GITHUB_REPO_OWNER = "SamiaAlshehri"
 GITHUB_REPO_NAME = "health_down_syndrome_chatbot"
 GITHUB_ACCESS_TOKEN = "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"
 
-@app.route('/discord-webhook', methods=['POST'])
+@app.route('/github', methods=['POST'])
 def discord_webhook():
     data = request.json
 
